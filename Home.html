@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; }
+        .nav { display: flex; justify-content: center; background: #007bff; padding: 10px; gap: 20px; }
+        .nav a { color: white; text-decoration: none; font-size: 18px; padding: 5px 10px; }
+        .product-list { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+    max-width: 900px; /* Giới hạn chiều rộng để chỉ hiển thị 4 sản phẩm */
+    margin: 20px auto; 
+    gap: 15px; 
+}
+
+        .product { background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 15px; margin: 15px; width: 220px; text-align: center; }
+        .product img { width: 150px; height: 170px; border-radius: 10px; }
+        .btn { padding: 8px; margin-top: 8px; cursor: pointer; border: none; border-radius: 5px; width: 100%; }
+        .cart-btn { background: green; color: white; }
+        .fav-btn { background: red; color: white; }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="Home.html">Home</a>
+        <a href="Cart.html">Giỏ hàng</a>
+        <a href="Favourite.html">Yêu thích</a>
+        <a href="Order.html">Đơn hàng</a>
+    </div>
+    
+    <h2>Danh sách sản phẩm</h2>
+    <div class="product-list" id="productList"></div>
+    
+    <script>
+        async function loadProducts() {
+            const response = await fetch('http://localhost:3000/products');
+            const products = await response.json();
+            
+            const productList = document.getElementById('productList');
+            productList.innerHTML = "";
+            
+            products.forEach(product => {
+                productList.innerHTML += `
+                    <div class="product">
+                        <img src="${product.img}" alt="${product.name}" onerror="this.src='images/default.jpg'">
+                        <h3>${product.name}</h3>
+                        <p>${product.price}.000 VND</p>
+                        <button class="btn cart-btn" onclick="addToCart(${product.id}, '${product.name}', ${product.price}, '${product.img}')">Thêm vào giỏ</button>
+                        <button class="btn fav-btn" onclick="addToFavorites(${product.id}, '${product.name}', ${product.price}, '${product.img}')">Yêu thích</button>
+                    </div>
+                `;
+            });
+        }
+
+        function addToCart(id, name, price, img) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    let existingProduct = cart.find(item => item.id === id);
+    if (existingProduct) {
+        existingProduct.quantity += 1;
+    } else {
+        cart.push({
+            id,
+            name,
+            price,
+            img: img && img !== "null" && img !== "undefined" ? img : "images/default.jpg",
+            quantity: 1
+        });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("Đã thêm vào giỏ hàng!");
+}
+
+
+
+        function addToFavorites(id, name, price, img) {
+            let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+            if (!favorites.some(item => item.id === id)) {
+                favorites.push({ id, name, price, img });
+                localStorage.setItem("favorites", JSON.stringify(favorites));
+                alert("Đã thêm vào danh sách yêu thích!");
+            } else {
+                alert("Sản phẩm đã có trong danh sách yêu thích!");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadProducts);
+    </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn hàng của bạn</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #f8f9fa; }
+        .container { width: 80%; margin: auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px; }
+        .order { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 10px; text-align: left; background: #fff; }
+        .order h3 { color: #007bff; }
+        .order p { margin: 5px 0; }
+        .products { margin-top: 10px; padding: 10px; background: #f4f4f4; border-radius: 8px; }
+        .product-item { display: flex; align-items: center; padding: 5px 0; border-bottom: 1px solid #ddd; }
+        .product-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; margin-right: 10px; }
+        .product-item p { margin: 0; flex: 1; }
+    </style>
+</head>
+<body>
+    <h2>📦 Đơn hàng của bạn</h2>
+    <div class="container" id="order-list">Đang tải đơn hàng...</div>
+
+    <script>
+        function loadOrders() {
+            let orders = JSON.parse(localStorage.getItem("orders")) || [];
+            let orderList = document.getElementById("order-list");
+            orderList.innerHTML = "";
+
+            if (orders.length === 0) {
+                orderList.innerHTML = "<p>Chưa có đơn hàng nào.</p>";
+                return;
+            }
+
+            orders.forEach((order, index) => {
+                let productListHTML = order.products.map(product => `
+                    <div class="product-item">
+                        <img src="${product.img}" alt="${product.name}" onerror="this.src='images/default.jpg'">
+                        <p><strong>${product.name}</strong> - ${product.price}.000 VND x ${product.quantity}</p>
+                    </div>
+                `).join("");
+
+                orderList.innerHTML += `
+                    <div class="order">
+                        <h3>🛍️ Đơn hàng #${index + 1}</h3>
+                        <p><strong>📌 Tên:</strong> ${order.name}</p>
+                        <p><strong>📞 SĐT:</strong> ${order.phone}</p>
+                        <p><strong>📍 Địa chỉ:</strong> ${order.address}</p>
+                        <p><strong>📝 Ghi chú:</strong> ${order.note || "Không có"}</p>
+                        <div class="products">${productListHTML}</div>
+                        <h4>💰 Tổng tiền: ${order.totalPrice.toLocaleString()}.000 VND</h4>
+                    </div>
+                `;
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", loadOrders);
+    </script>
+</body>
+</html>

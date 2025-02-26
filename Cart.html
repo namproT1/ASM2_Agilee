@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng</title>
+    <style>
+         .nav { display: flex; justify-content: center; background: #007bff; padding: 10px; gap: 20px; }
+         .nav a { color: white; text-decoration: none; font-size: 18px; padding: 5px 10px; }
+        body { font-family: Arial, sans-serif; text-align: center; background: #f8f9fa; }
+        .container { width: 60%; margin: auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px; }
+        .cart-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #ddd; }
+        .cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 5px; }
+        .cart-item p { margin: 0; font-size: 16px; }
+        .cart-item .details { flex: 1; text-align: left; padding-left: 10px; }
+        button { padding: 8px 12px; cursor: pointer; border: none; border-radius: 5px; }
+        .remove-btn { background: red; color: white; }
+        .checkout-btn { background: green; color: white; margin-top: 10px; }
+        .clear-btn { background: #666; color: white; margin-left: 10px; }
+        h3 { color: #333; margin-top: 20px; }
+        .hidden { display: none; } /* Ẩn form khi tải trang */
+        .form-container { text-align: left; margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px; }
+        label { font-weight: bold; }
+        input, textarea { width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="Home.html">Home</a>
+        <a href="Cart.html">Giỏ hàng</a>
+        <a href="Favourite.html">Yêu thích</a>
+        <a href="Order.html">Đơn hàng</a>
+    </div>
+    <h2>🛒 Giỏ hàng của bạn</h2>
+    <div class="container" id="cart-list"></div>
+    <h3 id="total-price">Tổng: 0 VND</h3>
+    <button class="checkout-btn" onclick="showCheckoutForm()">Thanh toán</button>
+    <button class="clear-btn" onclick="clearCart()">Xóa giỏ hàng</button>
+
+    <!-- Form nhập thông tin thanh toán (mặc định ẩn) -->
+    <div class="container form-container hidden" id="checkout-form">
+        <h3>Thông tin nhận hàng</h3>
+        <label for="name">Tên người nhận:</label>
+        <input type="text" id="name" placeholder="Nhập tên của bạn" required>
+        
+        <label for="phone">Số điện thoại:</label>
+        <input type="tel" id="phone" placeholder="Nhập số điện thoại" required>
+        
+        <label for="address">Địa chỉ:</label>
+        <input type="text" id="address" placeholder="Nhập địa chỉ giao hàng" required>
+
+        <label for="note">Ghi chú (Không bắt buộc):</label>
+        <textarea id="note" rows="3" placeholder="Nhập ghi chú nếu có..."></textarea>
+
+        <button class="checkout-btn" onclick="checkout()">Xác nhận thanh toán</button>
+    </div>
+
+    <script>
+        function loadCart() {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            let cartList = document.getElementById("cart-list");
+            let totalPrice = 0;
+
+            cartList.innerHTML = "";
+            cart.forEach(item => {
+                totalPrice += (item.price || 0) * (item.quantity || 1);
+                cartList.innerHTML += `
+                    <div class="cart-item">
+                        <img src="${item.img}" alt="${item.name}" onerror="this.src='images/default.jpg'">
+                        <div class="details">
+                            <p><strong>${item.name || "Sản phẩm không tên"}</strong></p>
+                            <p>${item.price || 0}.000 VND x ${item.quantity || 1}</p>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${item.id})">Xóa</button>
+                    </div>
+                `;
+            });
+
+            document.getElementById("total-price").innerText = `Tổng: ${totalPrice.toLocaleString()}.000 VND`;
+            document.getElementById("checkout-form").classList.add("hidden"); // Ẩn form khi tải trang
+        }
+
+        function removeFromCart(id) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart = cart.filter(item => item.id !== id);
+            localStorage.setItem("cart", JSON.stringify(cart));
+            loadCart();
+        }
+
+        function clearCart() {
+            localStorage.removeItem("cart");
+            loadCart();
+        }
+
+        function showCheckoutForm() {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            if (cart.length === 0) {
+                alert("Giỏ hàng trống, vui lòng thêm sản phẩm!");
+                return;
+            }
+            document.getElementById("checkout-form").classList.remove("hidden"); // Hiển thị form
+        }
+
+        function checkout() {
+            let name = document.getElementById("name").value.trim();
+            let phone = document.getElementById("phone").value.trim();
+            let address = document.getElementById("address").value.trim();
+            let note = document.getElementById("note").value.trim();
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            if (!name || !phone || !address) {
+                alert("Vui lòng nhập đầy đủ tên, số điện thoại và địa chỉ!");
+                return;
+            }
+
+            let totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+            let order = {
+                name, phone, address, note,
+                products: cart,
+                totalPrice
+            };
+
+            saveOrder(order);
+            alert(`🎉 Thanh toán thành công!`);
+            localStorage.removeItem("cart");
+            loadCart();
+        }
+
+        function saveOrder(order) {
+            let orders = JSON.parse(localStorage.getItem("orders")) || [];
+            orders.push(order);
+            localStorage.setItem("orders", JSON.stringify(orders));
+        }
+
+
+        document.addEventListener("DOMContentLoaded", loadCart);
+    </script>
+</body>
+</html>

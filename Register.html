@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { width: 300px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
+        input { width: 93%; padding: 10px; margin: 5px 0; }
+        button { width: 100%; padding: 10px; background: blue; color: white; border: none; cursor: pointer; }
+        button:hover { background: darkblue; }
+        .link { margin-top: 10px; display: block; color: blue; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Register</h2>
+        <input type="text" id="regUsername" placeholder="Username" />
+        <input type="password" id="regPassword" placeholder="Password" />
+        <button onclick="register()">Register</button>
+        <a href="login.html" class="link">Đã có tài khoản? Đăng nhập ngay</a>
+    </div>
+    
+</body>
+<script>
+   async function register() {
+    console.log("Hàm register đang chạy...");
+
+    const username = document.getElementById('regUsername').value;
+    const password = document.getElementById('regPassword').value;
+
+    console.log("Username:", username, "Password:", password);
+
+    try {
+        const checkResponse = await fetch('http://localhost:3000/users');
+        if (!checkResponse.ok) throw new Error("Lỗi kết nối đến server!");
+
+        const users = await checkResponse.json();
+        console.log("Danh sách users:", users);
+
+        if (users.some(user => user.username === username)) {
+            alert('Tên người dùng đã tồn tại!');
+            return;
+        }
+
+        const response = await fetch('http://localhost:3000/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password, role: 'user' })
+        });
+
+        console.log("Response:", response);
+
+        if (!response.ok) throw new Error("Lỗi khi đăng ký!");
+
+        alert('Đăng ký thành công! Chuyển đến trang đăng nhập.');
+        console.log("Chuyển hướng sang login.html");
+
+        setTimeout(() => {
+            window.location.href = 'Login.html';
+        }, 500);
+
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
+}
+
+ </script>
+</html>

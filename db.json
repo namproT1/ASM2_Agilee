@@ -1,0 +1,91 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "admin",
+      "password": "123456",
+      "role": "admin"
+    },
+    {
+      "id": "2",
+      "username": "user1",
+      "password": "password",
+      "role": "user"
+    },
+    {
+      "id": "6455",
+      "username": "",
+      "password": "",
+      "role": "user"
+    },
+    {
+      "id": "5a3e",
+      "username": "1",
+      "password": "1",
+      "role": "user"
+    },
+    {
+      "id": "35e9",
+      "username": "2",
+      "password": "2",
+      "role": "user"
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "name": "Bánh dâu",
+      "price": 40,
+      "img": "images/banhdau.jpg"
+    },
+    {
+      "id": "2",
+      "name": "Trà mãng cầu",
+      "price": 35,
+      "img": "images/mangcau.jpeg"
+    },
+    {
+      "id": "3",
+      "name": "Nước dưa hấu",
+      "price": 25,
+      "img": "images/nuocduahau.jpg"
+    },
+    {
+      "id": "4",
+      "name": "Bánh tiramisu",
+      "price": 25,
+      "img": "images/tiramisu.jpg"
+    },
+    {
+      "id": "5",
+      "name": "Capuchino",
+      "price": 25,
+      "img": "images/capuchino.jpeg"
+    },
+    {
+      "id": "6",
+      "name": "Trà cúc",
+      "price": 25,
+      "img": "images/tracuc.webp"
+    },
+    {
+      "id": "7",
+      "name": "Cà phê muối",
+      "price": 25,
+      "img": "images/cfmuooi.jpeg"
+    },
+    {
+      "id": "8",
+      "name": "Trà sữa",
+      "price": 25,
+      "img": "images/trasua.jpg"
+    },
+    {
+      "id": "9",
+      "name": "Bánh vani",
+      "price": 25,
+      "img": "images/vani.jpeg"
+    }
+
+  ]
+}

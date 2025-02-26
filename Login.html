@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { width: 300px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
+        input { width: 93%; padding: 10px; margin: 5px 0; }
+        button { width: 100%; padding: 10px; background: blue; color: white; border: none; cursor: pointer; }
+        button:hover { background: darkblue; }
+        .link { margin-top: 10px; display: block; color: blue; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <input type="text" id="loginUsername" placeholder="Username" />
+        <input type="password" id="loginPassword" placeholder="Password" />
+        <button onclick="login()">Login</button>
+        <a href="register.html" class="link">Chưa có tài khoản? Đăng ký ngay</a>
+    </div>
+    
+    <script>
+     async function login() {
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+
+    const response = await fetch('http://localhost:3000/users');
+    const users = await response.json();
+    
+    const user = users.find(u => u.username === username && u.password === password);
+    
+    if (user) {
+        localStorage.setItem('token', JSON.stringify(user));
+        alert('Đăng nhập thành công!');
+        window.location.href = 'home.html';
+    } else {
+        alert('Sai tên đăng nhập hoặc mật khẩu!');
+    }
+}
+
+    </script>
+</body>
+</html>
